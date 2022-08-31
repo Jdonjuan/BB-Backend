@@ -204,7 +204,9 @@ resource "aws_lambda_function" "update_budget" {
     runtime = "python3.9"
 }
 
-# Create API Gateway
+#-------------------
+# Create API Gateway --- Note: Does not create stage nor does this TF deploy the api gateway
+#-------------------
 resource "aws_api_gateway_rest_api" "bb_api" {
   name = "BudgetBoyAPI"
 }
@@ -322,6 +324,17 @@ resource "aws_api_gateway_integration" "get_budgets_integration" {
   content_handling = "CONVERT_TO_TEXT"
 }
 
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "get_budgets_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_budgets.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.get_budgets_method.http_method}${aws_api_gateway_resource.budgets.path}"
+}
+
 
 
 resource "aws_api_gateway_method" "delete_budgets_method" {
@@ -352,6 +365,17 @@ resource "aws_api_gateway_integration" "delete_budgets_integration" {
   content_handling = "CONVERT_TO_TEXT"
 }
 
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "delete_budgets_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.delete_budget.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.delete_budgets_method.http_method}${aws_api_gateway_resource.budgets.path}"
+}
+
 
 
 resource "aws_api_gateway_method" "post_budgets_method" {
@@ -376,6 +400,17 @@ resource "aws_api_gateway_integration" "post_budgets_integration" {
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.create_budget.invoke_arn
   content_handling = "CONVERT_TO_TEXT"
+}
+
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "post_budgets_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_budget.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.post_budgets_method.http_method}${aws_api_gateway_resource.budgets.path}"
 }
 
 
@@ -408,6 +443,17 @@ resource "aws_api_gateway_integration" "put_budgets_integration" {
   content_handling = "CONVERT_TO_TEXT"
 }
 
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "put_budgets_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.update_budget.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.put_budgets_method.http_method}${aws_api_gateway_resource.budgets.path}"
+}
+
 
 
 resource "aws_api_gateway_method" "get_budgets_sharing_method" {
@@ -438,6 +484,18 @@ resource "aws_api_gateway_integration" "get_budgets_sharing_integration" {
   content_handling = "CONVERT_TO_TEXT"
 }
 
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "get_budgets_sharing_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_userswithaccess.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.get_budgets_sharing_method.http_method}${aws_api_gateway_resource.budgets_sharing.path}"
+}
+
+
 
 
 resource "aws_api_gateway_method" "put_budgets_sharing_method" {
@@ -466,6 +524,17 @@ resource "aws_api_gateway_integration" "put_budgets_sharing_integration" {
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.share_budget.invoke_arn
   content_handling = "CONVERT_TO_TEXT"
+}
+
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "put_budgets_sharing_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.share_budget.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.put_budgets_sharing_method.http_method}${aws_api_gateway_resource.budgets_sharing.path}"
 }
 
 
@@ -498,6 +567,17 @@ resource "aws_api_gateway_integration" "get_categories_integration" {
   content_handling = "CONVERT_TO_TEXT"
 }
 
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "get_categories_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_categories.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.get_categories_method.http_method}${aws_api_gateway_resource.categories.path}"
+}
+
 
 
 resource "aws_api_gateway_method" "get_reportdata_method" {
@@ -527,3 +607,16 @@ resource "aws_api_gateway_integration" "get_reportdata_integration" {
   uri                     = aws_lambda_function.get_reportdata.invoke_arn
   content_handling = "CONVERT_TO_TEXT"
 }
+
+# lambda permissions for api gw integration
+resource "aws_lambda_permission" "get_reportdata_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_reportdata.arn
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.get_reportdata_method.http_method}${aws_api_gateway_resource.reportdata.path}"
+}
+
+
