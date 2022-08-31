@@ -209,3 +209,26 @@ resource "aws_api_gateway_rest_api" "bb_api" {
   name = "BudgetBoyAPI"
 }
 
+resource "aws_api_gateway_resource" "budgets" {
+  rest_api_id = aws_api_gateway_rest_api.bb_api.id
+  parent_id   = aws_api_gateway_rest_api.bb_api.root_resource_id
+  path_part   = "budgets"
+}
+
+resource "aws_api_gateway_resource" "budgets_sharing" {
+  rest_api_id = aws_api_gateway_rest_api.bb_api.id
+  parent_id   = aws_api_gateway_resource.budgets.id
+  path_part   = "sharing"
+}
+
+resource "aws_api_gateway_resource" "categories" {
+  rest_api_id = aws_api_gateway_rest_api.bb_api.id
+  parent_id   = aws_api_gateway_rest_api.bb_api.root_resource_id
+  path_part   = "categories"
+}
+
+resource "aws_api_gateway_resource" "reportdata" {
+  rest_api_id = aws_api_gateway_rest_api.bb_api.id
+  parent_id   = aws_api_gateway_rest_api.bb_api.root_resource_id
+  path_part   = "reportdata"
+}
