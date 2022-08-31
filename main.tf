@@ -289,6 +289,14 @@ resource "aws_api_gateway_authorizer" "bb-cognito" {
   provider_arns = data.aws_cognito_user_pools.budget_boy_data.arns
 }
 
+# Create Request Validator
+resource "aws_api_gateway_request_validator" "parameters" {
+  name                        = "Validate query string parameters and headers"
+  rest_api_id                 = aws_api_gateway_rest_api.bb_api.id
+  validate_request_body       = false
+  validate_request_parameters = true
+}
+
 # Create API Gateway Methods for each API Gateway resource
 resource "aws_api_gateway_method" "get_budgets_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
@@ -319,7 +327,7 @@ resource "aws_api_gateway_method" "delete_budgets_method" {
   request_parameters = {
     "method.request.querystring.BudgetID" = true
   }
-  request_validator_id = "3alc4t"
+  request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
 resource "aws_api_gateway_method" "post_budgets_method" {
@@ -351,7 +359,7 @@ resource "aws_api_gateway_method" "put_budgets_method" {
   request_parameters = {
     "method.request.querystring.BudgetID" = true
   }
-  request_validator_id = "3alc4t"
+  request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
 resource "aws_api_gateway_method" "get_budgets_sharing_method" {
@@ -369,7 +377,7 @@ resource "aws_api_gateway_method" "get_budgets_sharing_method" {
   request_parameters = {
     "method.request.querystring.BudgetID" = true
   }
-  request_validator_id = "3alc4t"
+  request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
 resource "aws_api_gateway_method" "put_budgets_sharing_method" {
@@ -387,5 +395,41 @@ resource "aws_api_gateway_method" "put_budgets_sharing_method" {
   request_parameters = {
     "method.request.querystring.BudgetID" = true
   }
-  request_validator_id = "3alc4t"
+  request_validator_id = aws_api_gateway_request_validator.parameters.id
+}
+
+resource "aws_api_gateway_method" "get_categories_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.categories.id
+  http_method   = "GET"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+  request_parameters = {
+    "method.request.querystring.BudgetID" = true
+  }
+  request_validator_id = aws_api_gateway_request_validator.parameters.id
+}
+
+resource "aws_api_gateway_method" "get_reportdata_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.reportdata.id
+  http_method   = "GET"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+  request_parameters = {
+    "method.request.querystring.BudgetID" = true
+  }
+  request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
