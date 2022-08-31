@@ -203,3 +203,9 @@ resource "aws_lambda_function" "update_budget" {
     handler = "BB-Update-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
 }
+
+# Create API Gateway
+resource "aws_api_gateway_rest_api" "bb_api" {
+  name = "BudgetBoyAPI"
+}
+
