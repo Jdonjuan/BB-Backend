@@ -288,3 +288,68 @@ resource "aws_api_gateway_authorizer" "bb-cognito" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
   provider_arns = data.aws_cognito_user_pools.budget_boy_data.arns
 }
+
+# Create API Gateway Methods for each API Gateway resource
+resource "aws_api_gateway_method" "get_budgets_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.budgets.id
+  http_method   = "GET"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+}
+
+resource "aws_api_gateway_method" "delete_budgets_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.budgets.id
+  http_method   = "DELETE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+  request_parameters = {
+    "method.request.querystring.BudgetID" = true
+  }
+  request_validator_id = "3alc4t"
+}
+
+resource "aws_api_gateway_method" "post_budgets_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.budgets.id
+  http_method   = "POST"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+}
+
+resource "aws_api_gateway_method" "put_budgets_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.budgets.id
+  http_method   = "PUT"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+  request_parameters = {
+    "method.request.querystring.BudgetID" = true
+  }
+  request_validator_id = "3alc4t"
+}
