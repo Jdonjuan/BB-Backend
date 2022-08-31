@@ -312,6 +312,18 @@ resource "aws_api_gateway_method" "get_budgets_method" {
   ]
 }
 
+resource "aws_api_gateway_integration" "get_budgets_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.budgets.id
+  http_method             = aws_api_gateway_method.get_budgets_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.get_budgets.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
+
 resource "aws_api_gateway_method" "delete_budgets_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
   resource_id   = aws_api_gateway_resource.budgets.id
@@ -330,6 +342,18 @@ resource "aws_api_gateway_method" "delete_budgets_method" {
   request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
+resource "aws_api_gateway_integration" "delete_budgets_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.budgets.id
+  http_method             = aws_api_gateway_method.delete_budgets_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.delete_budget.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
+
 resource "aws_api_gateway_method" "post_budgets_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
   resource_id   = aws_api_gateway_resource.budgets.id
@@ -343,6 +367,18 @@ resource "aws_api_gateway_method" "post_budgets_method" {
     "profile"
   ]
 }
+
+resource "aws_api_gateway_integration" "post_budgets_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.budgets.id
+  http_method             = aws_api_gateway_method.post_budgets_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.create_budget.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
 
 resource "aws_api_gateway_method" "put_budgets_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
@@ -362,6 +398,18 @@ resource "aws_api_gateway_method" "put_budgets_method" {
   request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
+resource "aws_api_gateway_integration" "put_budgets_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.budgets.id
+  http_method             = aws_api_gateway_method.put_budgets_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.update_budget.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
+
 resource "aws_api_gateway_method" "get_budgets_sharing_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
   resource_id   = aws_api_gateway_resource.budgets_sharing.id
@@ -379,6 +427,18 @@ resource "aws_api_gateway_method" "get_budgets_sharing_method" {
   }
   request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
+
+resource "aws_api_gateway_integration" "get_budgets_sharing_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.budgets_sharing.id
+  http_method             = aws_api_gateway_method.get_budgets_sharing_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.get_userswithaccess.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
 
 resource "aws_api_gateway_method" "put_budgets_sharing_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
@@ -398,6 +458,18 @@ resource "aws_api_gateway_method" "put_budgets_sharing_method" {
   request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
+resource "aws_api_gateway_integration" "put_budgets_sharing_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.budgets_sharing.id
+  http_method             = aws_api_gateway_method.put_budgets_sharing_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.share_budget.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
+
 resource "aws_api_gateway_method" "get_categories_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
   resource_id   = aws_api_gateway_resource.categories.id
@@ -416,6 +488,18 @@ resource "aws_api_gateway_method" "get_categories_method" {
   request_validator_id = aws_api_gateway_request_validator.parameters.id
 }
 
+resource "aws_api_gateway_integration" "get_categories_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.categories.id
+  http_method             = aws_api_gateway_method.get_categories_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.get_categories.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
+}
+
+
+
 resource "aws_api_gateway_method" "get_reportdata_method" {
   rest_api_id   = aws_api_gateway_rest_api.bb_api.id
   resource_id   = aws_api_gateway_resource.reportdata.id
@@ -432,4 +516,14 @@ resource "aws_api_gateway_method" "get_reportdata_method" {
     "method.request.querystring.BudgetID" = true
   }
   request_validator_id = aws_api_gateway_request_validator.parameters.id
+}
+
+resource "aws_api_gateway_integration" "get_reportdata_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.bb_api.id
+  resource_id             = aws_api_gateway_resource.reportdata.id
+  http_method             = aws_api_gateway_method.get_reportdata_method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.get_reportdata.invoke_arn
+  content_handling = "CONVERT_TO_TEXT"
 }
