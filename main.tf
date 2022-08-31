@@ -353,3 +353,39 @@ resource "aws_api_gateway_method" "put_budgets_method" {
   }
   request_validator_id = "3alc4t"
 }
+
+resource "aws_api_gateway_method" "get_budgets_sharing_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.budgets_sharing.id
+  http_method   = "GET"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+  request_parameters = {
+    "method.request.querystring.BudgetID" = true
+  }
+  request_validator_id = "3alc4t"
+}
+
+resource "aws_api_gateway_method" "put_budgets_sharing_method" {
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  resource_id   = aws_api_gateway_resource.budgets_sharing.id
+  http_method   = "PUT"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.bb-cognito.id
+  authorization_scopes = [
+    "aws.cognito.signin.user.admin",
+    "email",
+    "openid",
+    "profile"
+  ]
+  request_parameters = {
+    "method.request.querystring.BudgetID" = true
+  }
+  request_validator_id = "3alc4t"
+}
