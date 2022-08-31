@@ -38,6 +38,52 @@ resource "aws_iam_role" "lambda_role" {
   ]
 }
 
+resource "aws_iam_role" "apigw_role" {
+  name = "BudgetBoyAPIGatewayRole"
+  description = "Allows API Gateway to push logs to CloudWatch Logs and Send messages to SQS Queues"
+  assume_role_policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "apigateway.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+  }
+  EOF
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
+    "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+    "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
+  ]
+}
+
+resource "aws_iam_role" "eventbridge_role" {
+  name = "BB-EventBridgeRuleRole"
+  assume_role_policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "events.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+  }
+  EOF
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+  ]
+}
+
 # Create Zip files for lambdas FYI: ${path.module} means current directory
 data "archive_file" "clear_budget_zip" {
     type = "zip"
@@ -91,5 +137,69 @@ resource "aws_lambda_function" "clear_budget" {
     function_name = "BB-Clear-Budget-Lambda"
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Clear-Budget-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "create_budget" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Create-Budget-Lambda.zip"
+    function_name = "BB-Create-Budget-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Create-Budget-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "delete_budget" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Delete-Budget-Lambda.zip"
+    function_name = "BB-Delete-Budget-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Delete-Budget-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "get_budgets" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Get-Budgets-Lambda.zip"
+    function_name = "BB-Get-Budgets-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Get-Budgets-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "get_categories" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Get-Categories-Lambda.zip"
+    function_name = "BB-Get-Categories-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Get-Categories-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "get_reportdata" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Get-ReportData-Lambda.zip"
+    function_name = "BB-Get-ReportData-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Get-ReportData-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "get_userswithaccess" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Get-UsersWithAccess-Lambda.zip"
+    function_name = "BB-Get-UsersWithAccess-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Get-UsersWithAccess-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "share_budget" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Share-Budget-Lambda.zip"
+    function_name = "BB-Share-Budget-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Share-Budget-Lambda.lambda_handler"
+    runtime = "python3.9"
+}
+
+resource "aws_lambda_function" "update_budget" {
+    filename = "${path.module}/LambdaCodeFiles/TFzips/BB-Update-Budget-Lambda.zip"
+    function_name = "BB-Update-Budget-Lambda"
+    role = aws_iam_role.lambda_role.arn
+    handler = "BB-Update-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
 }
