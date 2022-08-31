@@ -209,6 +209,7 @@ resource "aws_api_gateway_rest_api" "bb_api" {
   name = "BudgetBoyAPI"
 }
 
+# Create API Gateway Resources
 resource "aws_api_gateway_resource" "budgets" {
   rest_api_id = aws_api_gateway_rest_api.bb_api.id
   parent_id   = aws_api_gateway_rest_api.bb_api.root_resource_id
@@ -231,4 +232,59 @@ resource "aws_api_gateway_resource" "reportdata" {
   rest_api_id = aws_api_gateway_rest_api.bb_api.id
   parent_id   = aws_api_gateway_rest_api.bb_api.root_resource_id
   path_part   = "reportdata"
+}
+
+# Create Cognito User Pool
+resource "aws_cognito_user_pool" "budget_boy" {
+  name = "Budget Boy"
+  auto_verified_attributes   = [
+      "email",
+    ]
+  mfa_configuration = "OPTIONAL"
+  tags = {}
+  username_attributes = [
+    "email"
+  ]
+  account_recovery_setting {
+    recovery_mechanism {
+      name = "verified_email"
+      priority = 1
+    }
+  }
+  admin_create_user_config {
+    allow_admin_create_user_only = false
+  }
+  email_configuration {
+    email_sending_account = "COGNITO_DEFAULT"
+  }
+  schema {
+    attribute_data_type = "String"
+    developer_only_attribute = false
+    mutable = true
+    name = "email"
+    required = true
+    string_attribute_constraints {
+      max_length = "2048"
+      min_length = "0"
+    }
+  }
+  software_token_mfa_configuration {
+    enabled = true
+  }
+  username_configuration {
+    case_sensitive = false
+  }
+}
+
+# Get Cognito pool data
+data "aws_cognito_user_pools" "budget_boy_data" {
+  name = "Budget Boy"
+}
+
+# Create API Gateway Authorizer for Cognito pool
+resource "aws_api_gateway_authorizer" "bb-cognito" {
+  name          = "BudgetBoyCognitoAuthorizer"
+  type          = "COGNITO_USER_POOLS"
+  rest_api_id   = aws_api_gateway_rest_api.bb_api.id
+  provider_arns = data.aws_cognito_user_pools.budget_boy_data.arns
 }
