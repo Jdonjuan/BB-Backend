@@ -620,3 +620,142 @@ resource "aws_lambda_permission" "get_reportdata_permission" {
 }
 
 
+# Create SQS Dead letter Queue & its policy
+resource "aws_sqs_queue" "clear_budget_dlq" {
+  name                      = "BB-Clear-Budget-DLQ"
+  delay_seconds             = 0
+  max_message_size          = 262144
+  message_retention_seconds = 60
+  receive_wait_time_seconds = 0
+  redrive_allow_policy = jsonencode(
+    {
+      redrivePermission = "allowAll"
+    }
+  )
+}
+
+resource "aws_sqs_queue_policy" "clear_budget_dlq_policy" {
+  queue_url = aws_sqs_queue.clear_budget_dlq.id
+  policy = <<POLICY
+  {
+    "Version": "2008-10-17",
+    "Id": "__default_policy_ID",
+    "Statement": [
+      {
+        "Sid": "__owner_statement",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::139654284650:root"
+        },
+        "Action": "SQS:*",
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-DLQ"
+      },
+      {
+        "Sid": "__sender_statement",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "events.amazonaws.com",
+          "AWS": [
+            "arn:aws:iam::139654284650:role/aws-service-role/apidestinations.events.amazonaws.com/AWSServiceRoleForAmazonEventBridgeApiDestinations",
+            "arn:aws:iam::139654284650:role/BudgetBoyLambdaRole",
+            "arn:aws:iam::139654284650:role/BB-EventBridgeRuleRole"
+          ]
+        },
+        "Action": "SQS:SendMessage",
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-Queue"
+      },
+      {
+        "Sid": "EventsToMyQueue",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "events.amazonaws.com"
+        },
+        "Action": "sqs:SendMessage",
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-DLQ"
+      }
+    ]
+  }
+  POLICY
+}
+
+# Create SQS Clear Budget Queue & its policy
+resource "aws_sqs_queue" "clear_budget_queue" {
+  name                      = "BB-Clear-Budget-Queue"
+  delay_seconds             = 0
+  max_message_size          = 262144
+  message_retention_seconds = 345600
+  receive_wait_time_seconds = 20
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.clear_budget_dlq.arn
+    maxReceiveCount     = 2
+  })
+}
+
+resource "aws_sqs_queue_policy" "clear_budget_queue_policy" {
+  queue_url = aws_sqs_queue.clear_budget_queue.id
+  policy = <<POLICY
+  {
+    "Version": "2008-10-17",
+    "Id": "__default_policy_ID",
+    "Statement": [
+      {
+        "Sid": "__owner_statement",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::139654284650:root"
+        },
+        "Action": "SQS:*",
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-Queue"
+      },
+      {
+        "Sid": "__sender_statement",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": [
+            "arn:aws:iam::139654284650:role/BudgetBoyLambdaRole",
+            "arn:aws:iam::139654284650:role/BB-EventBridgeRuleRole",
+            "arn:aws:iam::139654284650:role/aws-service-role/apidestinations.events.amazonaws.com/AWSServiceRoleForAmazonEventBridgeApiDestinations"
+          ],
+          "Service": "events.amazonaws.com"
+        },
+        "Action": "SQS:SendMessage",
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-Queue"
+      },
+      {
+        "Sid": "__receiver_statement",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": [
+            "arn:aws:iam::139654284650:role/BudgetBoyLambdaRole",
+            "arn:aws:iam::139654284650:role/BB-EventBridgeRuleRole"
+          ]
+        },
+        "Action": [
+          "SQS:ChangeMessageVisibility",
+          "SQS:DeleteMessage",
+          "SQS:ReceiveMessage"
+        ],
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-Queue"
+      },
+      {
+        "Sid": "EventsToMyQueue",
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "events.amazonaws.com"
+        },
+        "Action": "sqs:SendMessage",
+        "Resource": "arn:aws:sqs:us-east-1:139654284650:BB-Clear-Budget-DLQ"
+      }
+    ]
+  }
+  POLICY
+}
+
+
+# Create sqs aws_lambda_event_source_mapping
+
+# Create Clear Budgets SQS Lambda Permissions or aws_lambda_event_source_mapping
+# Create EventBridge > SQS
+
+# DynamoDB
+
