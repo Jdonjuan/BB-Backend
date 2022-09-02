@@ -752,10 +752,39 @@ resource "aws_sqs_queue_policy" "clear_budget_queue_policy" {
 }
 
 
-# Create sqs aws_lambda_event_source_mapping
-
-# Create Clear Budgets SQS Lambda Permissions or aws_lambda_event_source_mapping
-# Create EventBridge > SQS
+# Create sqs aws_lambda_event_source_mapping (Trigger)
+resource "aws_lambda_event_source_mapping" "clear_budget_queue_to_lambda" {
+  event_source_arn = aws_sqs_queue.clear_budget_queue.arn
+  function_name    = aws_lambda_function.clear_budget.arn
+}
 
 # DynamoDB
+resource "aws_dynamodb_table" "budget_boy_table" {
+  name           = "BudgetBoyTable"
+  billing_mode   = "PROVISIONED"
+  table_class = "STANDARD"
+  read_capacity  = 1
+  write_capacity = 1
+  hash_key       = "PK"
+  range_key      = "SK"
 
+  attribute {
+    name = "PK"
+    type = "S"
+  }
+
+  attribute {
+    name = "SK"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name               = "SK-PK-index"
+    hash_key           = "SK"
+    range_key          = "PK"
+    write_capacity     = 1
+    read_capacity      = 1
+    projection_type    = "ALL"
+    non_key_attributes = []
+  }
+}
