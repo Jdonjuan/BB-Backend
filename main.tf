@@ -12,7 +12,9 @@ provider "aws" {
   profile = "default"
 }
 
-# Create Roles
+# --------------------------------------------
+# Create IAM Roles used in Budget Boy Backend
+# --------------------------------------------
 resource "aws_iam_role" "lambda_role" {
   name = "BudgetBoyLambdaRole"
   description = "Allows Lambda functions access to SQS Queues, EventBridge, and RDS"
@@ -84,6 +86,9 @@ resource "aws_iam_role" "eventbridge_role" {
   ]
 }
 
+# -----------------------------------
+# Create and deploy Lambda Functions
+# -----------------------------------
 # Create Zip files for lambdas FYI: ${path.module} means current directory
 data "archive_file" "clear_budget_zip" {
     type = "zip"
@@ -204,9 +209,11 @@ resource "aws_lambda_function" "update_budget" {
     runtime = "python3.9"
 }
 
-#-------------------
-# Create API Gateway --- Note: Does not create stage nor does this TF deploy the api gateway
-#-------------------
+
+#---------------------------------------------------------------------
+# Create API Gateway: Resources, Methods, Integrations, & permissions | Note: Does not create stages nor does this TF deploy the api gateway
+#---------------------------------------------------------------------
+# Create API
 resource "aws_api_gateway_rest_api" "bb_api" {
   name = "BudgetBoyAPI"
 }
@@ -619,8 +626,9 @@ resource "aws_lambda_permission" "get_reportdata_permission" {
   source_arn = "${aws_api_gateway_rest_api.bb_api.execution_arn}/*/${aws_api_gateway_method.get_reportdata_method.http_method}${aws_api_gateway_resource.reportdata.path}"
 }
 
-
-# Create SQS Dead letter Queue & its policy
+# -----------------------------------------
+# Create SQS Queues & Policies
+# -----------------------------------------
 resource "aws_sqs_queue" "clear_budget_dlq" {
   name                      = "BB-Clear-Budget-DLQ"
   delay_seconds             = 0
@@ -758,7 +766,9 @@ resource "aws_lambda_event_source_mapping" "clear_budget_queue_to_lambda" {
   function_name    = aws_lambda_function.clear_budget.arn
 }
 
-# DynamoDB
+# -----------------------------------------
+# Create DynamoDB Table for Budget Boy
+# -----------------------------------------
 resource "aws_dynamodb_table" "budget_boy_table" {
   name           = "BudgetBoyTable"
   billing_mode   = "PROVISIONED"
