@@ -143,6 +143,7 @@ resource "aws_lambda_function" "clear_budget" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Clear-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Clear-Budget-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "create_budget" {
@@ -151,6 +152,7 @@ resource "aws_lambda_function" "create_budget" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Create-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Create-Budget-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "delete_budget" {
@@ -159,6 +161,7 @@ resource "aws_lambda_function" "delete_budget" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Delete-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Delete-Budget-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "get_budgets" {
@@ -167,6 +170,7 @@ resource "aws_lambda_function" "get_budgets" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Get-Budgets-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Get-Budgets-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "get_categories" {
@@ -175,6 +179,7 @@ resource "aws_lambda_function" "get_categories" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Get-Categories-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Get-Categories-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "get_reportdata" {
@@ -183,6 +188,7 @@ resource "aws_lambda_function" "get_reportdata" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Get-ReportData-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Get-ReportData-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "get_userswithaccess" {
@@ -191,6 +197,7 @@ resource "aws_lambda_function" "get_userswithaccess" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Get-UsersWithAccess-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Get-UsersWithAccess-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "share_budget" {
@@ -199,6 +206,7 @@ resource "aws_lambda_function" "share_budget" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Share-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Share-Budget-Lambda.zip")}"
 }
 
 resource "aws_lambda_function" "update_budget" {
@@ -207,6 +215,7 @@ resource "aws_lambda_function" "update_budget" {
     role = aws_iam_role.lambda_role.arn
     handler = "BB-Update-Budget-Lambda.lambda_handler"
     runtime = "python3.9"
+    source_code_hash = "${filebase64sha256("${path.module}/LambdaCodeFiles/TFzips/BB-Update-Budget-Lambda.zip")}"
 }
 
 
