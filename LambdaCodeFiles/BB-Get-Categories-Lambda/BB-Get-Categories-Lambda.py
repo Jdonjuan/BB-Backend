@@ -59,6 +59,7 @@ def lambda_handler(event, context):
     HttpResponseObject['statusCode'] = 200
     HttpResponseObject['headers'] = {}
     HttpResponseObject['headers']['Content-Type'] = 'application/json'
+    HttpResponseObject['headers']['Access-Control-Allow-Origin'] = '*'
     HttpResponseObject['body'] = json.dumps(Body)
     
     
