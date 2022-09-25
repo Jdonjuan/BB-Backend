@@ -3,7 +3,7 @@ import boto3
 # Create SQS client
 sqs = boto3.client('sqs')
 
-queue_url = 'https://sqs.us-east-1.amazonaws.com/139654284650/BB-Clear-Budget-Queue'
+queue_url = 'https://sqs.us-east-1.amazonaws.com//BB-Clear-Budget-Queue'
 
 # # Enable long polling on an existing SQS queue
 # sqs.set_queue_attributes(
