@@ -111,7 +111,14 @@ def lambda_handler(event, context):
             }
             ]
         )
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello Create-Budget-Lambda process successfully!')
-    }
+    Body = 'Update-Budget-Lambda completed successfully'
+
+    # Construct http response object
+    HttpResponseObject = {}
+    HttpResponseObject['statusCode'] = 200
+    HttpResponseObject['headers'] = {}
+    HttpResponseObject['headers']['Content-Type'] = 'application/json'
+    HttpResponseObject['headers']['Access-Control-Allow-Origin'] = '*'
+    HttpResponseObject['body'] = json.dumps(Body)
+    
+    return HttpResponseObject
