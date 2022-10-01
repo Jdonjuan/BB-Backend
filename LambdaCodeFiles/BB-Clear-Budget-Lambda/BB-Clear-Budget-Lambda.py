@@ -66,12 +66,13 @@ def lambda_handler(event, context):
             Item = HistItem
             )
         
-        # Clear CategoryAmountUsed for each category
-        table.update_item(
-            Key = {'PK': Category['PK'], 'SK': Category['SK']},
-            UpdateExpression = "set CategoryAmountUsed=:a",
-            ExpressionAttributeValues = { ':a': '0' }
-            )
+        # Clear CategoryAmountUsed for each category if the category is not recurring
+        if Category["IsRecurring"] == False:
+            table.update_item(
+                Key = {'PK': Category['PK'], 'SK': Category['SK']},
+                UpdateExpression = "set CategoryAmountUsed=:a",
+                ExpressionAttributeValues = { ':a': '0' }
+                )
             
     return {
         'statusCode': 200,
